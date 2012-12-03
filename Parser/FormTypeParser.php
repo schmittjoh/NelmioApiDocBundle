@@ -38,7 +38,7 @@ class FormTypeParser implements ParserInterface
         'country'   => 'string',
     );
 
-    public function __construct(FormFactoryInterface $formFactory, FormRegistry $formRegistry)
+    public function __construct(FormFactoryInterface $formFactory, FormRegistry $formRegistry = null)
     {
         $this->formFactory  = $formFactory;
         $this->formRegistry = $formRegistry;
@@ -151,7 +151,7 @@ class FormTypeParser implements ParserInterface
 
             return $this->formFactory->create($type);
         }
-        if ($this->formRegistry->hasType($item)) {
+        if (null !== $this->formRegistry && $this->formRegistry->hasType($item)) {
             return $this->formFactory->create($item);
         }
     }

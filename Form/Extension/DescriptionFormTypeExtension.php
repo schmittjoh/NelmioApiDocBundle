@@ -16,13 +16,14 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\FormBuilder;
 
 class DescriptionFormTypeExtension extends AbstractTypeExtension
 {
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilder $builder, array $options)
     {
         $builder->setAttribute('description', $options['description']);
     }
@@ -30,7 +31,7 @@ class DescriptionFormTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form)
     {
         $view->vars['description'] = $options['description'];
     }
@@ -38,11 +39,9 @@ class DescriptionFormTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setDefaultOptions(array $options)
     {
-        $resolver->setDefaults(array(
-            'description' => '',
-        ));
+        return array('description' => '');
     }
 
     /**
