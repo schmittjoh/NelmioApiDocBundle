@@ -33,13 +33,13 @@ class DescriptionFormTypeExtension extends AbstractTypeExtension
      */
     public function buildView(FormView $view, FormInterface $form)
     {
-        $view->vars['description'] = $options['description'];
+        $view->set('description', $form->getAttribute('description'));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(array $options)
+    public function getDefaultOptions()
     {
         return array('description' => '');
     }

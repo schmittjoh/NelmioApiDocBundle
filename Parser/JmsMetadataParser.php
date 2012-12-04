@@ -13,8 +13,8 @@ namespace Nelmio\ApiDocBundle\Parser;
 
 use Metadata\MetadataFactoryInterface;
 use Nelmio\ApiDocBundle\Util\DocCommentExtractor;
-use JMS\SerializerBundle\Metadata\PropertyMetadata;
-use JMS\SerializerBundle\Metadata\VirtualPropertyMetadata;
+use JMS\Serializer\Metadata\PropertyMetadata;
+use JMS\Serializer\Metadata\VirtualPropertyMetadata;
 
 /**
  * Uses the JMS metadata factory to extract input/output model information
@@ -75,7 +75,11 @@ class JmsMetadataParser implements ParserInterface
         foreach ($meta->propertyMetadata as $item) {
 
             if (!is_null($item->type)) {
-                $name = isset($item->serializedName) ? $item->serializedName : $item->name;
+                if (isset($item->serializedName)) {
+                    $name = $item->serializedName;
+                } else {
+                    $name = preg_replace_callback('/[A-Z]/', function ($match) { return '_'.strtolower($match[0]); }, lcfirst($item->name));
+                }
 
                 $dataType = $this->processDataType(is_string($item->type) ? $item->type : $item->type['name']);
 

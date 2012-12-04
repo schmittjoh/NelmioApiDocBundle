@@ -32,6 +32,11 @@ class DocCommentExtractor
     {
         $comment = $reflected->getDocComment();
 
+        // Handles single line doc comments.
+        if (preg_match('/^\/\*\*\s+@/', $comment)) {
+            return '';
+        }
+
         // Remove PHPDoc
         $comment = preg_replace('/^\s+\* @[\w0-9]+.*/msi', '', $comment);
 
