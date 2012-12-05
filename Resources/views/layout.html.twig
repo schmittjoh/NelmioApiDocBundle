@@ -1,4 +1,6 @@
-{% extends "::fixed_layout.html.twig" %}
+{% extends "::fluid_layout.html.twig" %}
+
+{% block active_tab %}cr{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -7,16 +9,41 @@
     </script>
 {% endblock %}
 
+{% block title %}API Documentation - Automated Code Reviews Documentation{% endblock %}
+
+{% block sidebar %}
+    <h3>{{ "header.toc"|trans|desc("Table Of Contents") }}</h3>
+
+    <ul>
+        <li><a href="#sec_general">General</a></li>
+        <li><a href="#sec_resources">Resources</a></li>
+    </ul>
+
+{% endblock %}
+
 {% block content %}
+
+    <ul class="breadcrumb">
+        <li><a href="{{ path("watched_repository_list") }}">Automated Code Reviews</a> <span class="divider">/</span></li>
+        <li><a href="{{ path("code_review_doc_view") }}">Documentation</a> <span class="divider">/</span></li>
+        <li><a class="active" href="{{ path("nelmio_api_doc_index") }}">Configuration</a></li>
+    </ul>
 
     <div class="page-header">
         <h1>API Documentation</h1>
     </div>
 
-    <div class="container">
-        <div class="accordion" id="resources">
-            {% block resourceContent %}{% endblock %}
-        </div>
-    </div>
+    <h2 id="sec_general">General</h2>
+    <h4>Request and Response Format</h4>
+    All input parameters are expected to be sent in the body as JSON-encoded data. Likewise, all responses are
+    sent as JSON-encoded data as specified in the respective sections.
+
+    <h4>Authentication</h4>
+    All requests must be authenticated by appending <code>?access_token=your-access-token</code> to the given endpoint.
+    Users can obtain access tokens via <a href="{{ path("profile_applications") }}">the profile</a>; there currently
+    exists no dedicated endpoint for creating tokens programmatically.
+
+    <h2 id="sec_resources">Resources</h2>
+    {% block resourceContent %}{% endblock %}
 
 {% endblock %}

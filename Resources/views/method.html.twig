@@ -7,7 +7,7 @@
             {% if data.description is defined %}{{ data.description }}{% endif %}
         </a>
     </div>
-    <div id="#{{ resourceId }}" class="accordion-body collapse in">
+    <div id="{{ resourceId }}_endpoint_{{ loop.index }}" class="accordion-body collapse">
         <div class="accordion-inner">
 
             {% if data.documentation is defined and data.documentation is not empty %}
@@ -138,4 +138,3 @@
             </div>
         </div>
     </div>
-</div>

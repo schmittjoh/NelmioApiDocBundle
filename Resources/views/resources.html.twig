@@ -2,22 +2,12 @@
 
 {% block resourceContent %}
     {% for resource, methods in resources %}
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#resources" href="#resource_{{ loop.index }}">
-                    {{ resource }}
-                </a>
-            </div>
-            {% set resourceId = "resource_" ~ loop.index %}
-            <div id="#{{ resourceId }}" class="accordion-body collapse in">
-                <div class="accordion-inner">
-                    <div class="accordion" id="resource_{{ loop.index }}_endpoints">
-                        {% for data in methods %}
-                            {% include 'NelmioApiDocBundle::method.html.twig' %}
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
+        <h4>{{ resource }}</h4>
+        {% set resourceId = "resource_" ~ loop.index %}
+        <div class="accordion" id="{{ resourceId }}">
+            {% for data in methods %}
+                {% include 'NelmioApiDocBundle::method.html.twig' %}
+            {% endfor %}
         </div>
     {% endfor %}
 {% endblock resourceContent %}
