@@ -71,7 +71,7 @@ class FormTypeParser implements ParserInterface
             $type = $this->getTypeInstance($type);
         }
 
-        $form = $this->formFactory->create($type);
+        $form = $this->formFactory->createBuilder($type);
 
         return $this->parseForm($form);
     }
@@ -79,50 +79,25 @@ class FormTypeParser implements ParserInterface
     private function parseForm($form, $prefix = null)
     {
         $parameters = array();
-        foreach ($form as $name => $child) {
-            $config = $child->getConfig();
-
-            if ($prefix) {
-                $name = sprintf('%s[%s]', $prefix, $name);
+        foreach ($form->all() as $name => $child) {
+            if ($child instanceof FormBuilder) {
+                $childBuilder = $child;
+            } else {
+                $childBuilder = $form->create($name, $child['type'] ?: 'text', $child['options']);
             }
 
             $bestType = '';
-            for ($type = $config->getType(); null !== $type; $type = $type->getParent()) {
+            foreach ($childBuilder->getTypes() as $type) {
                 if (isset($this->mapTypes[$type->getName()])) {
                     $bestType = $this->mapTypes[$type->getName()];
                 }
             }
 
-            if ('' === $bestType) {
-                if ($type = $config->getType()) {
-                    if ($type = $type->getInnerType()) {
-                        /**
-                         * TODO: Implement a better handling of unsupported types
-                         * This is just a temporary workaround for don't breaking docs page in case of unsupported types
-                         * like the entity type https://github.com/nelmio/NelmioApiDocBundle/issues/94
-                         */
-                        try {
-                            $subForm    = $this->formFactory->create($type);
-                            $parameters = array_merge($parameters, $this->parseForm($subForm, $name));
-                        } catch (\Exception $e) {
-                            $parameters[$name] = array(
-                                'dataType'      => 'string',
-                                'required'      => $config->getRequired(),
-                                'description'   => $config->getAttribute('description'),
-                                'readonly'      => $config->getDisabled(),
-                            );
-                        }
-
-                        continue;
-                    }
-                }
-            }
-
             $parameters[$name] = array(
-                'dataType'      => $bestType,
-                'required'      => $config->getRequired(),
-                'description'   => $config->getAttribute('description'),
-                'readonly'      => $config->getDisabled(),
+                'dataType' => $bestType,
+                'required' => $childBuilder->getRequired(),
+                'description' => $childBuilder->getAttribute('description'),
+                'readonly' => $childBuilder->getDisabled(),
             );
         }
 
@@ -146,13 +121,6 @@ class FormTypeParser implements ParserInterface
 
     private function createForm($item)
     {
-        if ($this->implementsType($item)) {
-            $type = $this->getTypeInstance($item);
-
-            return $this->formFactory->create($type);
-        }
-        if (null !== $this->formRegistry && $this->formRegistry->hasType($item)) {
-            return $this->formFactory->create($item);
-        }
+        return $this->formFactory->create($item);
     }
 }
